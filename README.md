@@ -1,4 +1,4 @@
-# 第一个 app
+# 开始
 
 ## 安装
 
@@ -145,11 +145,79 @@ let x: Drink = ["hello", 10]; // OK
 ## 接口
 
 接口+类->代码重用
+
 接口：规定对象中的属性和类型。
 
+当函数需要接受一个对象做参数时，可以为对象定义一个接口。
+```
+interface Vehicle {
+   name: string;
+   year: Date;
+   broken: boolean;
+   summary(): string;
+}
+```
+
+**进阶** 
+
+将对对象的操作定义为对象方法后，可以在对象内部操作属性，那么接口可以省略定义其他属性，把对象方法抽出成接口就可以重用。
+```
+interface Reportable {
+  summary(): string;
+}
+```
+
 🦆：接口只检查传入对象是否有规定的属性，不会限制对象的额外属性；但传入对象字面量就会严格检查，不能有额外属性。
+
 可以把相同返回值类型的对象函数抽象成一个接口，可重用：可以接受任何包含某个函数的对象。
 
 ## 类 Class
 
 创建对象的蓝图
+```
+class Vehicle {
+  constructor(public color: string) {}
+  
+  protected honk(): void {
+    console.log('beep');
+  }
+  private beep(): void {
+    console.log('beep');
+  }
+}
+```
+继承
+```
+  class Car extends Vehicle {
+    constructor(public wheels: number, color: string) {
+      super(color);
+    }
+  
+    private drive(): void {
+      console.log('vroom');
+    }
+  }
+```
+# 第一个app
+面向对象，为每个对象创建一个类
+
+当对象类型不同，但有相同操作时，我们可以将共同具有的属性和方法抽出，定义一个接口，让每个类实现这个抽象类。这样就可以使传入的参数类型一致从而复用代码。
+
+例如User和Company在地图上显示坐标的时候都只需要用到坐标和markerContent()方法。
+```
+export interface Mappable{
+    location:{
+        lat:number;
+        lng:number;
+    };
+    markerContent():string;
+}
+    addMarker(mappable:Mappable):void{
+        const marker = new BMapGL.Marker(new BMapGL.Point(mappable.location.lng,mappable.location.lat));
+        this.BMap.addOverlay(marker);  
+        marker.addEventListener("click",function(){
+            alert(mappable.markerContent());
+        
+        });
+    }
+```

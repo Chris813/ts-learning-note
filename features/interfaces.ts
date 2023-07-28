@@ -2,6 +2,13 @@ interface Reportable {
   summary(): string;
 }
 
+// interface Vehicle {
+//   name: string;
+//   year: Date;
+//   broken: boolean;
+//   summary(): string;
+// }
+
 const oldCivic = {
   name: "civic",
   year: new Date(),
