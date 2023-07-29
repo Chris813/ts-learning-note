@@ -221,3 +221,25 @@ export interface Mappable{
         });
     }
 ```
+# 排序app
+添加tsconfig.json: `tsc --init`
+
+在`tsconfig.json`文件内设置rootDir和outDir，命令行运行`tsc`命令就会自动读取对应目录下的ts文件，并将js文件输出到指定目录
+
+`tsc -w`每次修改自动编译保存
+安装 concurrently nodemon 包，实现修改后自动的编译运行
+
+```
+  "start:built": "tsc -w",
+  "start:run": "nodemon built/index.js",
+  "start": "concurrently npm:start:*"
+```
+
+将不同对象里的相同方法逻辑抽象成一个抽象类，不同对象通过继承抽象类，在自己类内部定义自己的具体处理逻辑；
+
+接口是把对象中相同的属性抽出来作为接口，保证实现的对象被都有这些属性
+# 分析csv文件
+1. 不要文本硬编码
+- 使用enum：可选值是一个固定集合
+- 提取抽象数据源获取的逻辑
+  - 处理获取的数据，为它定义类型

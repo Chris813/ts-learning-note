@@ -5,6 +5,7 @@
 	},
 	"dependencies": {
 		"@faker-js/faker": "^8.0.2",
+		"concurrently": "^8.2.0",
 		"faker": "^6.6.6"
 	}
 }
