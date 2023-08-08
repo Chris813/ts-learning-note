@@ -22,8 +22,8 @@ _可能报错_:`error TS2584: Cannot find name 'console'.`
 
 - 对象属性访问错误
 - 调用函数是参数输入错误
-
-# 类型
+# 基础
+## 类型
 
 > 什么是类型？
 
@@ -174,7 +174,7 @@ interface Reportable {
 ## 类 Class
 
 创建对象的蓝图
-```
+```typescript
 class Vehicle {
   constructor(public color: string) {}
   
@@ -187,7 +187,7 @@ class Vehicle {
 }
 ```
 继承
-```
+```typescript
   class Car extends Vehicle {
     constructor(public wheels: number, color: string) {
       super(color);
@@ -198,13 +198,49 @@ class Vehicle {
     }
   }
 ```
+## 泛型
+T作为类型的占位符
+
+类型：
+```typescript
+class ArrayOfAnything<T> {
+  constructor(public collection: T[]) {}
+
+  get(index: number): T {
+    return this.collection[index];
+  }
+}
+```
+
+函数：
+```typescript
+function printAnything<T>(arr: T[]): void {
+  for (let i = 0; i < arr.length; i++) {
+    console.log(arr[i]);
+  }
+}
+```
+
+泛型约束：
+
+通过继承接口来约束泛型内要实现某些属性或方法
+```typescript
+function printHousesOrCars<T extends Printable>(arr: T[]): void {
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].print();
+  }
+}
+```
+
 # 第一个app
 面向对象，为每个对象创建一个类
 
-当对象类型不同，但有相同操作时，我们可以将共同具有的属性和方法抽出，定义一个接口，让每个类实现这个抽象类。这样就可以使传入的参数类型一致从而复用代码。
+**当对象类型不同，但有相同操作时**，我们可以将共同具有的属性和方法抽出，定义一个接口，让每个类实现这个抽象类。这样就可以使传入的参数类型一致从而复用代码。
+
+`implements`关键字是实现，使用 接口只定义了类型
 
 例如User和Company在地图上显示坐标的时候都只需要用到坐标和markerContent()方法。
-```
+```typescript
 export interface Mappable{
     location:{
         lat:number;
@@ -234,12 +270,92 @@ export interface Mappable{
   "start:run": "nodemon built/index.js",
   "start": "concurrently npm:start:*"
 ```
-
+**对象不同，方法类似**
 将不同对象里的相同方法逻辑抽象成一个抽象类，不同对象通过继承抽象类，在自己类内部定义自己的具体处理逻辑；
 
 接口是把对象中相同的属性抽出来作为接口，保证实现的对象被都有这些属性
+
+例如对数字、字符串、链表进行排序，可以使用相同的排序算法，但由于操作对象不同，排序算法内部的实现细节不一致。这时就可以抽出不同的方法，例如：比较、交换，定义为抽象方法，让操作对象在继承时重写。
+
+`extends`关键字是继承，子类可以重写父类定义的方法，也可以使用。
+
+```typescript
+export abstract class Sorter{
+    abstract compare(leftIndex: number, rightIndex: number): boolean;
+    abstract swap(leftIndex: number, rightIndex: number): void;
+    abstract length: number;
+    sort(): void{
+        const { length } = this;
+        for(let i = 0; i < length; i++){
+            for(let j = 0; j < length - i - 1; j++){
+               if(this.compare(j, j + 1)){
+                   this.swap(j, j + 1);
+               }
+            }
+        }
+    }
+}
+```
 # 分析csv文件
-1. 不要文本硬编码
-- 使用enum：可选值是一个固定集合
-- 提取抽象数据源获取的逻辑
-  - 处理获取的数据，为它定义类型
+需求：整体分为读取文件和分析文件数据并输出
+
+1. 读取文件类型需要多样
+
+把从不同文件读数据的方法read()和存储的数据封装为接口。之后新增别的类型的只需要实现这个类就可以。
+```typescript
+export interface DataReader{
+    data:string[][],
+    read():void
+}
+```
+
+2. 读取数据后还要存储，需要定义存储的数据类型
+
+这其中还使用了枚举、type
+
+```typescript
+export enum MatchResult {
+    HomeWin = 'H',
+    AwayWin = 'A',
+    Draw = 'D'
+}
+export type MatchData=[
+    Date,
+    string,
+    string,
+    number,
+    number,
+    MatchResult,
+    string
+]
+```
+
+3. 数据分析也可能会有多种方法
+
+将数据分析的方法封装为接口
+
+```typescript
+export interface Analyzer{
+    run(matches:MatchData[]):string
+}
+```
+
+4. 输出也可能有多种不同形式
+
+将输出的print方法封装成接口
+```typescript
+export interface OutputTarget{
+    print(output:string):void
+}
+```
+
+4. 运行数据分析并输出
+
+作为Summary类的方法
+
+```typescript
+buildAndPrintReport(matches:MatchData[]){
+  const output=this.analyzer.run(matches)
+  this.outputTarget.print(output)
+}
+```

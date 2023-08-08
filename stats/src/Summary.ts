@@ -1,6 +1,6 @@
 import { MatchData } from "./MatchData";
 import { WinsAnalysis } from "./analyzers/WinsAnalysis";
-import { HtmlReport } from "./reportTargets.ts/HtmlReport";
+import { HtmlReport } from "./reportTargets/HtmlReport";
 
 export interface Analyzer{
     run(matches:MatchData[]):string;
