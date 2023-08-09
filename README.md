@@ -359,3 +359,58 @@ buildAndPrintReport(matches:MatchData[]){
   this.outputTarget.print(output)
 }
 ```
+# web框架
+整体思路：
+
+先构建拥有大量方法的User类->使用组合重构User类->重构User类使其成为一个可重用的类，可以表示其他数据
+
+![Alt text](./img/IMG_0702.jpeg)
+
+## 构建User类
+### on
+在对象上注册事件。使用Map存储，事件名作为key，注册的回调函数存储在数组中作为值
+
+### trigger
+调用在User上注册的事件
+
+### fetch和save
+使用json-server保存数据,使用axios获取数据
+安装json-server
+`npm install -g json-server`
+
+`json-server -w db.json`运行一个服务器，通过给出的地址将db.json文件作为数据库，使用axios进行操作。
+
+## 重构User类
+将User类分为三个部分：
+- 存储与用户相关的数据
+- 负责事件逻辑
+- 处理数据持久性
+目标：将User类中的大量方法拆分，通过组合的方式作为User类的属性进行操作。
+![Alt text](./img/IMG_0703.jpeg)
+### 事件类
+可能的解决方法：
+1. 直接在构造器中引入依赖 ❌每次创建User时还需要创建一个事件类
+2. 将创建事件类部分定义为一个类作为预配制类，仍然直接在构造器中引入依赖，但使用静态方法在内部使用预配制类构建对象。
+例如：
+
+```typescript
+interface DataReader{
+    read():void;
+    data:string[][];
+}
+
+export class MatchReader{
+    static fromCsv(filename:string):MatchReader{
+        return new MatchReader(new CsvFileReader(filename));
+    }
+    constructor(public reader:DataReader){}
+}
+```
+  将read()读取数据的方法分离，使用CsvFileReader类读取数据；使用fromCsv静态方法new CsvFileReader类。
+
+  👎缺点：
+  - 预配制初始化繁琐
+  -  如果不使用CsvFileReader类，还需要复制代码再写一个静态方法（这也是好处👍，预配制类可以灵活更换，视具体情况判断）
+
+
+3. 事件类作为属性，每次new User类时，默认创建
