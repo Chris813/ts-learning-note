@@ -385,6 +385,7 @@ buildAndPrintReport(matches:MatchData[]){
 - 存储与用户相关的数据
 - 负责事件逻辑
 - 处理数据持久性
+  
 目标：将User类中的大量方法拆分，通过组合的方式作为User类的属性进行操作。
 ![Alt text](./img/IMG_0703.jpeg)
 ### 事件类
