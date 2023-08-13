@@ -414,3 +414,56 @@ export class MatchReader{
 
 
 3. 事件类作为属性，每次new User类时，默认创建
+
+### Sync类
+Sync类中有sava和fetch方法，需要使用User类中的数据
+
+方法：
+
+1. 通过方法参数传递 ❌Sync类与User类高度绑定
+2. Serialize和Deserialize 
+Serialize：从对象转化为可存储的形式（json）
+
+Deserialize:解析json数据为对象
+
+（提取传递参数中共有的属性为**接口**）
+
+3. 定义Sync为一个泛型类
+
+使用泛型约束,将需要的T的属性作为接口由T继承
+
+```typescript
+interface HasId{
+    id?:number;
+}
+export class Sync<T extends HasId>{
+    constructor(public rootUrl:string){}
+    save(data:T):AxiosPromise{
+        const { id }=data;
+        if(id){
+            return axios.put(`${this.rootUrl}/${id}`,data)
+        }else{
+            return axios.post(this.rootUrl,data)
+        }
+    }
+}
+```
+### Attributes类
+泛型约束升级：
+
+获取泛型中的属性
+
+```typescript
+get<K extends keyof T>(key:K):T[K]{
+  return this.data[key];
+}
+```
+### 组合 使用get获取方法
+使用get 将分布在各个组件里的方法返回给User类，使得可以直接在user实例上调用。
+
+但要注意`this`，返回到user里的`this`指的就是当前的user实例，可以使用箭头函数。
+
+## 从User类中提取可重用的类
+在Model.ts中为注入的依赖定义接口，提取出User类中定义好的方法作为亲类。之后不同的类可以继承Model。
+
+继承时，在子类new 需要的依赖，定义静态方法进行实例化
