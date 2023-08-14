@@ -1,8 +1,17 @@
-import { Collection } from './../../.history/web/src/models/Collection_20230813164754';
-import {User} from './models/User'
+import { UserList } from './views/UserList';
+import { Collection } from './models/Collection';
+import {User, UserProps} from './models/User'
 
-const collection=User.buildUserCollection();
-collection.on('change',()=>{
-    console.log(collection)
+
+// const userform=new UserForm(document.getElementById('root'),user);
+// userform.render();
+// const usershow=new UserShow(document.getElementById('root'),user);
+// usershow.render();
+const usercollection=new Collection('http://localhost:3000/users',(json:UserProps)=>User.buildUser(json));
+usercollection.on('change',()=>{
+    const root=document.getElementById('root');
+    const userList=new UserList(root,usercollection)
+    userList.render();
 })
-collection.fetch();
+usercollection.fetch()
+

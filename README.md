@@ -468,3 +468,22 @@ get<K extends keyof T>(key:K):T[K]{
 在Model.ts中为注入的依赖定义接口，提取出User类中定义好的方法作为亲类。之后不同的类可以继承Model。
 
 继承时，在子类new 需要的依赖，定义静态方法进行实例化
+
+## View
+
+### UserForm表单
+template()方法返回字符串
+render()将其加入亲DOM节点后进行渲染
+
+**绑定事件**
+eventsMap() 定义一组事件：组件内部定义的handeler键值对。这样在视图上触发的事件可以调用类内部的事件处理方法
+
+bindEvents() 遍历eventsMap的键，通过事件名：选择器名，为对应的选择器触发的事件绑定handler值
+
+**和Model类绑定**
+construtor传入model类。定义按钮对模型进行更新保存。
+
+🔆事件处理函数被传递到eventsMap中，事件方法内调用的this会变，造成bug。使用箭头函数。
+
+### 提取可重用代码
+
